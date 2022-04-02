@@ -1,2 +1,4 @@
-# prepare-a-ligand
-Prepare a 3D SDF file from SMILES for a ligand
+# LigPrepper
+
+###Prepare a 3D SDF files from SMILES for ligands
+
