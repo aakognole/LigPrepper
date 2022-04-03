@@ -8,17 +8,22 @@ from rdkit.Chem import rdMolAlign
 #from rdkit.Chem import TemplateAlign
 #from rdkit.Chem import rdDepictor
 
-def smiles2sdf(smiles, labels=None, ref=None):
+def smiles2sdf(smiles, labels=None, ref=None, mergesdf=False):
     if isinstance(smiles, str):
         mols = []
         mols.append(smiles)
         if labels:
             label = []
             label.append(labels)
+        else:
+            label=None
+        mergesdf=False
     elif isinstance(smiles, list):
         mols = smiles
         if labels:
             label = labels
+        if mergesdf:
+            w0 = Chem.SDWriter('all_mols.sdf')
     for i,smile in enumerate(mols):
         mol = Chem.MolFromSmiles(smile)
         if label:
@@ -40,5 +45,7 @@ def smiles2sdf(smiles, labels=None, ref=None):
             w = Chem.SDWriter('%s.sdf'%(label[i]))
         else:
             w = Chem.SDWriter('mol-%d.sdf'%(i+1))
-        w.write(mol)
-        
+        if mergesdf:
+            w0.write(mol)
+        else:
+            w.write(mol)
