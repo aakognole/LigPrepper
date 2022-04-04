@@ -2,6 +2,8 @@
 
 Simple program to quickly prepare 3D SDF files from SMILES for ligands using rdkit.
 
+[![PyPI version](https://badge.fury.io/py/LigPrepper.svg)](https://badge.fury.io/py/LigPrepper) [![Downloads](https://pepy.tech/badge/LigPrepper)](https://pepy.tech/project/LigPrepper)
+
 ## Installation:
 
 ```
