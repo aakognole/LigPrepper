@@ -7,8 +7,17 @@ from rdkit.Chem import AllChem
 from rdkit.Chem import rdMolAlign
 #from rdkit.Chem import TemplateAlign
 #from rdkit.Chem import rdDepictor
+#rdDepictor.SetPreferCoordGen(True)
 
-def smiles2sdf(smiles, labels=None, ref=None, mergesdf=False):
+try:
+    from openbabel import openbabel
+except:
+    print(">>> Warning:\n"
+          "            Could not find openbabel!!! SMILES2MOL2 is not available!\n"
+          ">>> To install openbabel:\n"
+          "            conda install -c conda-forge openbabel")
+
+def smiles2sdf(smiles, labels=None, ref=None, mergesdf=False, onlysdf=True):
     if isinstance(smiles, str):
         mols = []
         mols.append(smiles)
@@ -16,17 +25,19 @@ def smiles2sdf(smiles, labels=None, ref=None, mergesdf=False):
             label = []
             label.append(labels)
         else:
-            label=None
+            mlabel = []
         mergesdf=False
     elif isinstance(smiles, list):
         mols = smiles
         if labels:
             label = labels
+        else:
+            mlabel = []
         if mergesdf:
             w0 = Chem.SDWriter('all_mols.sdf')
     for i,smile in enumerate(mols):
         mol = Chem.MolFromSmiles(smile)
-        if label:
+        if labels:
             mol.SetProp("_Name",label[i])
         mol = Chem.AddHs(mol)
         ps = AllChem.ETKDG()
@@ -41,11 +52,28 @@ def smiles2sdf(smiles, labels=None, ref=None, mergesdf=False):
                 o3d.Align()
             except:
                 pass
-        if label:
+        if labels:
             w = Chem.SDWriter('%s.sdf'%(label[i]))
         else:
-            w = Chem.SDWriter('mol-%d.sdf'%(i+1))
+            l = "mol-%d"%(i+1)
+            mlabel.append(l)
+            w = Chem.SDWriter('%s.sdf'%(l))
         if mergesdf:
             w0.write(mol)
         else:
             w.write(mol)
+    if not onlysdf:
+        if labels:
+            return mols, label
+        else:
+            return mols, mlabel
+
+def smiles2mol2(smiles, labels=None, ref=None):
+    mergesdf=False
+    mols, label = smiles2sdf(smiles, labels=labels, ref=ref, mergesdf=mergesdf, onlysdf=False)
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("sdf", "mol2")
+    for l in label:
+        mol = openbabel.OBMol()
+        obConversion.ReadFile(mol, "%s.sdf"%(l))
+        obConversion.WriteFile(mol, "%s.mol2"%(l))
