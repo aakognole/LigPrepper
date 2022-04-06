@@ -2,7 +2,7 @@
 
 Simple program to quickly prepare 3D SDF/MOL2 files from SMILES for ligands using rdkit.
 
-[![PyPI version](https://badge.fury.io/py/LigPrepper.svg)](https://badge.fury.io/py/LigPrepper) [![Downloads](https://pepy.tech/badge/LigPrepper)](https://pepy.tech/project/LigPrepper)
+[![PyPI version](https://badge.fury.io/py/LigPrepper.svg)](https://badge.fury.io/py/LigPrepper) [![Downloads](https://pepy.tech/badge/ligprepper)](https://pepy.tech/project/ligprepper)
 
 ## Installation:
 
@@ -26,7 +26,7 @@ LigPrepper.smiles2mol2('c1ccncc1', labels='pyridine')
 LigPrepper.smiles2sdf(smiles_list, labels=labels_list, mergesdf=False)
 ```
 
-#### Have reference molecule to align to in SDF format
+#### Want to align molecule to reference molecule in SDF format
 
 ```
 LigPrepper.smiles2sdf(smiles_list, labels=labels_list, ref='ref.sdf', mergesdf=False)
