@@ -1,3 +1,4 @@
+import os
 from rdkit import Chem
 #from rdkit.Chem import DataStructs
 from rdkit.Chem import AllChem
@@ -77,3 +78,16 @@ def smiles2mol2(smiles, labels=None, ref=None):
         mol = openbabel.OBMol()
         obConversion.ReadFile(mol, "%s.sdf"%(l))
         obConversion.WriteFile(mol, "%s.mol2"%(l))
+        os.system("rm %s.sdf"%(l))
+    return mols, label
+
+def smiles2pdbqt(smiles, labels=None, ref=None):
+    mols, label = smiles2mol2(smiles, labels=labels, ref=ref)
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("mol2", "pdbqt")
+    for l in label:
+        mol = openbabel.OBMol()
+        obConversion.ReadFile(mol, "%s.mol2"%(l))
+        obConversion.WriteFile(mol, "%s.pdbqt"%(l))
+        os.system("rm %s.mol2"%(l))
+    return mols, label
