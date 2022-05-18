@@ -37,32 +37,38 @@ def smiles2sdf(smiles, labels=None, ref=None, mergesdf=False, onlysdf=True):
         if mergesdf:
             w0 = Chem.SDWriter('all_mols.sdf')
     for i,smile in enumerate(mols):
-        mol = Chem.MolFromSmiles(smile)
-        if labels:
-            mol.SetProp("_Name",label[i])
-        mol = Chem.AddHs(mol)
-        ps = AllChem.ETKDG()
-        ps.randomSeed = 0xf00d
-        Chem.AllChem.EmbedMolecule(mol,ps)
-        if ref:
-            suppl = Chem.SDMolSupplier(ref)
-            refmol = suppl[0]
-            refmol = Chem.AddHs(refmol)
-            o3d = rdMolAlign.GetO3A(mol,refmol)
-            try:
-                o3d.Align()
-            except:
-                pass
-        if labels:
-            w = Chem.SDWriter('%s.sdf'%(label[i]))
-        else:
-            l = "mol-%d"%(i+1)
-            mlabel.append(l)
-            w = Chem.SDWriter('%s.sdf'%(l))
-        if mergesdf:
-            w0.write(mol)
-        else:
-            w.write(mol)
+        try:
+            mol = Chem.MolFromSmiles(smile)
+            if labels:
+                mol.SetProp("_Name",label[i])
+            mol = Chem.AddHs(mol)
+            ps = AllChem.ETKDG()
+            ps.randomSeed = 0xf00d
+            Chem.AllChem.EmbedMolecule(mol,ps)
+            if ref:
+                suppl = Chem.SDMolSupplier(ref)
+                refmol = suppl[0]
+                refmol = Chem.AddHs(refmol)
+                o3d = rdMolAlign.GetO3A(mol,refmol)
+                try:
+                    o3d.Align()
+                except:
+                    pass
+            if labels:
+                w = Chem.SDWriter('%s.sdf'%(label[i]))
+            else:
+                l = "mol-%d"%(i+1)
+                mlabel.append(l)
+                w = Chem.SDWriter('%s.sdf'%(l))
+            if mergesdf:
+                w0.write(mol)
+            else:
+                w.write(mol)
+        except:
+            if labels:
+                print("Failed to prepare molecule : %s with SMILES = %s" % (label[i],smile))
+            else:
+                print("Failed to prepare molecule : mol-%d with SMILES = %s"%(i+1,smile))
     if not onlysdf:
         if labels:
             return mols, label
