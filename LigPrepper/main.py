@@ -14,7 +14,7 @@ try:
     from openbabel import openbabel
 except:
     print(">>> Warning:\n"
-          "            Could not find openbabel!!! SMILES2MOL2 is not available!\n"
+          "            Could not find OpenBabel!!! SMILES2MOL2 and SMILES2PDBQT are not available!\n"
           ">>> To install openbabel:\n"
           "            conda install -c conda-forge openbabel")
 
