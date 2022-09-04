@@ -2,6 +2,8 @@
 
 Simple program to quickly prepare 3D SDF/MOL2/PDBQT files from SMILES for ligands using rdkit & openbabel.
 
+Also, split sdf and convert formats sdf<->pdbqt for Autodock Vina
+
 [![PyPI version](https://badge.fury.io/py/LigPrepper.svg)](https://badge.fury.io/py/LigPrepper) [![Downloads](https://pepy.tech/badge/ligprepper)](https://pepy.tech/project/ligprepper)
 
 ## Installation:
@@ -34,3 +36,15 @@ LigPrepper.smiles2sdf(smiles_list, labels=labels_list, mergesdf=False)
 LigPrepper.smiles2sdf(smiles_list, labels=labels_list, ref='ref.sdf', mergesdf=False)
 ```
 
+#### convert formats
+
+```
+sdf2pdbqt
+pdbqt2sdf
+```
+
+#### split sdf
+
+```
+splitsdf
+```

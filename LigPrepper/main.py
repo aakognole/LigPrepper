@@ -97,3 +97,68 @@ def smiles2pdbqt(smiles, labels=None, ref=None):
         obConversion.WriteFile(mol, "%s.pdbqt"%(l))
         os.system("rm %s.mol2"%(l))
     return mols, label
+
+def sdf2pdbqt(sdfile):
+    l=str(sdfile)[0:-4]
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("sdf", "mol2")
+    mol = openbabel.OBMol()
+    obConversion.ReadFile(mol, "%s.sdf"%(l))
+    obConversion.WriteFile(mol, "%s.mol2"%(l))
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("mol2", "pdbqt")
+    mol = openbabel.OBMol()
+    obConversion.ReadFile(mol, "%s.mol2"%(l))
+    obConversion.WriteFile(mol, "%s.pdbqt"%(l))
+    os.system("rm %s.mol2"%(l))
+    return "%s.pdbqt"%(l)
+
+def pdbqt2sdf(ligand):
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("pdbqt","sdf")
+    mol = openbabel.OBMol()
+    obConversion.ReadFile(mol, "%s.pdbqt"%(str(ligand)[0:-6]))
+    obConversion.WriteFile(mol, "%s.sdf"%(str(ligand)[0:-6]))
+    return "%s.sdf"%(str(ligand)[0:-6])
+
+def splitsdf(sdfile,outputdir=None):
+    print("Splitting %s"%(sdfile), end=" : ")
+    f = open(sdfile, 'r')
+    count=0
+    molsep="$$$$"
+    for line in f.readlines():
+        l = str(line).split()
+        if molsep in l:
+            count += 1
+    f.close()
+    sdfiles = []
+    if count == 1:
+        sdfiles.append(sdfile)
+        return count, sdfiles
+    elif count > 1:
+        f = open(sdfile, 'r')
+        molnameline=True
+        for line in f.readlines():
+            l = str(line).split()
+            if not molsep in l:
+                if molnameline:
+                    molname=str(l[0])
+                    if outputdir:
+                        sdfilename=outputdir+'/'+molname+".sdf"
+                    else:
+                        sdfilename=molname+".sdf"
+                    newf = open(sdfilename,'w')
+                    newf.write(line)
+                    molnameline=False
+                    sdfiles.append(sdfilename)
+                else:
+                    newf.write(line)
+            else:
+                newf.write(line)
+                newf.close()
+                molnameline=True
+        return count, sdfiles
+    else:
+        print(" *** Error: sdfile could not be processed! *** ")
+        exit()
+    print("Done!")
