@@ -134,7 +134,6 @@ def splitsdf(sdfile,outputdir=None):
     sdfiles = []
     if count == 1:
         sdfiles.append(sdfile)
-        return count, sdfiles
     elif count > 1:
         f = open(sdfile, 'r')
         molnameline=True
@@ -157,8 +156,8 @@ def splitsdf(sdfile,outputdir=None):
                 newf.write(line)
                 newf.close()
                 molnameline=True
-        return count, sdfiles
     else:
         print(" *** Error: sdfile could not be processed! *** ")
         exit()
     print("Done!")
+    return count, sdfiles
