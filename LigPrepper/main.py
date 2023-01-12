@@ -121,7 +121,7 @@ def pdbqt2sdf(ligand):
     obConversion.WriteFile(mol, "%s.sdf"%(str(ligand)[0:-6]))
     return "%s.sdf"%(str(ligand)[0:-6])
 
-def splitsdf(sdfile,outputdir=None):
+def splitsdf(sdfile,outputdir=None,parts=0):
     print("Splitting %s"%(sdfile), end=" : ")
     f = open(sdfile, 'r')
     count=0
@@ -131,10 +131,11 @@ def splitsdf(sdfile,outputdir=None):
         if molsep in l:
             count += 1
     f.close()
+    bunch=int(count/parts)
     sdfiles = []
     if count == 1:
         sdfiles.append(sdfile)
-    elif count > 1:
+    elif count > 1 and parts == 0:
         f = open(sdfile, 'r')
         molnameline=True
         for line in f.readlines():
@@ -156,6 +157,33 @@ def splitsdf(sdfile,outputdir=None):
                 newf.write(line)
                 newf.close()
                 molnameline=True
+    elif count > 1 and parts > 0:
+        f = open(sdfile, 'r')
+        newbunch = True
+        molnum, part = 0, 0
+        for line in f.readlines():
+            l = str(line).split()
+            if molsep in l:
+                molnum += 1
+                newf.write(line)
+                if molnum >= bunch:
+                    newf.close()
+                    newbunch = True
+                    molnum = 0
+                else:
+                    newbunch = False
+            else:
+                if newbunch:
+                    part += 1
+                    filename=str(sdfile)+'_part'+str(part)
+                    if outputdir:
+                        sdfilename=outputdir+'/'+filename+".sdf"
+                    else:
+                        sdfilename=filename+".sdf"
+                    newf = open(sdfilename,'w')
+                    sdfiles.append(sdfilename)
+                    newbunch = False
+                newf.write(line)
     else:
         print(" *** Error: sdfile could not be processed! *** ")
         exit()
