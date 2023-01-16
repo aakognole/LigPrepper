@@ -48,3 +48,13 @@ pdbqt2sdf
 ```
 splitsdf
 ```
+
+#### Draw 2D structures
+
+```
+LigPrepper.smiles2png(smiles_list, labels=labels_list)
+
+LigPrepper.smiles2png(smiles_list, labels=labels_list, ref='ref smiles')
+
+LigPrepper.smiles2png(smiles_list, labels=labels_list, ref='ref.sdf')
+```
