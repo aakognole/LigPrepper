@@ -44,9 +44,9 @@ def smiles2sdf(smiles, labels=None, ref=None, mergesdf=False, onlysdf=True):
             if labels:
                 mol.SetProp("_Name",label[i])
             mol = Chem.AddHs(mol)
-            ps = AllChem.ETKDG()
+            ps = AllChem.ETKDGv3()
             ps.randomSeed = 0xf00d
-            Chem.AllChem.EmbedMolecule(mol,ps)
+            AllChem.EmbedMolecule(mol,ps)
             if ref:
                 suppl = Chem.SDMolSupplier(ref)
                 refmol = suppl[0]
@@ -123,7 +123,9 @@ def pdbqt2sdf(ligand):
     obConversion.WriteFile(mol, "%s.sdf"%(str(ligand)[0:-6]))
     return "%s.sdf"%(str(ligand)[0:-6])
 
-def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1):
+def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1,firstpart=1):
+    if outputdir:
+        os.system("mkdir -p %s"%(outputdir))
     if parts > 0 and molspersdf > 1:
         parts = 0
     print("Splitting %s"%(sdfile), end=" : ")
@@ -139,13 +141,19 @@ def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1):
     if count == 1:
         sdfiles.append(sdfile)
     elif count > 1 and parts == 0 and molspersdf == 1:
+        allmolnames = []
         f = open(sdfile, 'r')
         molnameline=True
         for line in f.readlines():
             l = str(line).split()
             if not molsep in l:
                 if molnameline:
-                    molname=str(l[0])
+                    conf=1
+                    molname=str(l[0])+'_'+str(conf)
+                    while molname in allmolnames:
+                        conf+=1
+                        molname=str(l[0])+'_'+str(conf)
+                    allmolnames.append(molname)
                     if outputdir:
                         sdfilename=outputdir+'/'+molname+".sdf"
                     else:
@@ -164,7 +172,7 @@ def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1):
         f = open(sdfile, 'r')
         bunch=int(count/parts)
         newbunch = True
-        molnum, part = 0, 0
+        molnum, part = 0, firstpart-1
         for line in f.readlines():
             l = str(line).split()
             if molsep in l:
@@ -179,7 +187,7 @@ def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1):
             else:
                 if newbunch:
                     part += 1
-                    filename=str(sdfile)+'_part'+str(part)
+                    filename=str(sdfile)[0:-4]+'_part'+str(part)
                     if outputdir:
                         sdfilename=outputdir+'/'+filename+".sdf"
                     else:
@@ -192,7 +200,7 @@ def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1):
         f = open(sdfile, 'r')
         bunch=int(molspersdf)
         newbunch = True
-        molnum, part = 0, 0
+        molnum, part = 0, firstpart-1
         for line in f.readlines():
             l = str(line).split()
             if molsep in l:
@@ -207,7 +215,7 @@ def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1):
             else:
                 if newbunch:
                     part += 1
-                    filename=str(sdfile)+'_part'+str(part)
+                    filename=str(sdfile)[0:-4]+'_part'+str(part)
                     if outputdir:
                         sdfilename=outputdir+'/'+filename+".sdf"
                     else:

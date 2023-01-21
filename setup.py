@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="LigPrepper",
-    version="0.4.2",
+    version="0.4.3",
     author="Abhishek Kognole",
     author_email="aakognole@gmail.com",
     description="Simple program to quickly prepare ligand 3d SDF/MOL2/PDBQT from smiles",
