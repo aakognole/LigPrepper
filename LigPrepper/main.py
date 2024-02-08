@@ -131,18 +131,34 @@ def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1,firstpart=1):
     print("Splitting %s"%(sdfile), end=" : ")
     count=0
     molsep="$$$$"
-    with open(sdfile, 'r') as f:
-        for line in f:
-            line1 = line.strip()
-            if line1.startswith(molsep):
-                count += 1
+    try:
+        with open(sdfile, 'r', encoding='utf-8') as f:
+            for line in f:
+                line1 = line.strip()
+                if line1.startswith(molsep):
+                    count += 1
+        encoding='utf-8'
+    except UnicodeDecodeError:
+        with open(sdfile, 'r', encoding='latin-1') as f:
+            for line in f:
+                line1 = line.strip()
+                if line1.startswith(molsep):
+                    count += 1
+        encoding='latin-1'
+    except:
+        with open(sdfile, 'r', encoding='cp1252') as f:
+            for line in f:
+                line1 = line.strip()
+                if line1.startswith(molsep):
+                    count += 1
+        encoding='cp1252'
     sdfiles = []
     if count == 1:
         sdfiles.append(sdfile)
     elif count > 1 and parts == 0 and molspersdf == 1:
         allmolnames = []
         molnameline=True
-        with open(sdfile, 'r') as f:
+        with open(sdfile, 'r', encoding=encoding) as f:
             for line in f:
                 l = str(line).split()
                 if not molsep in l:
@@ -171,7 +187,7 @@ def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1,firstpart=1):
         bunch=int(count/parts)
         newbunch = True
         molnum, part = 0, firstpart-1
-        with open(sdfile, 'r') as f:
+        with open(sdfile, 'r', encoding=encoding) as f:
             for line in f:
                 l = str(line).split()
                 if molsep in l:
@@ -199,7 +215,7 @@ def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1,firstpart=1):
         bunch=int(molspersdf)
         newbunch = True
         molnum, part = 0, firstpart-1
-        with open(sdfile, 'r') as f:
+        with open(sdfile, 'r', encoding=encoding) as f:
             for line in f:
                 l = str(line).split()
                 if molsep in l:
