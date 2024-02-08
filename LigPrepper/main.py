@@ -129,101 +129,100 @@ def splitsdf(sdfile,outputdir=None,parts=0,molspersdf=1,firstpart=1):
     if parts > 0 and molspersdf > 1:
         parts = 0
     print("Splitting %s"%(sdfile), end=" : ")
-    f = open(sdfile, 'r')
     count=0
     molsep="$$$$"
-    for line in f.readlines():
-        l = str(line).split()
-        if molsep in l:
-            count += 1
-    f.close()
+    with open(sdfile, 'r') as f:
+        for line in f:
+            line1 = line.strip()
+            if line1.startswith(molsep):
+                count += 1
     sdfiles = []
     if count == 1:
         sdfiles.append(sdfile)
     elif count > 1 and parts == 0 and molspersdf == 1:
         allmolnames = []
-        f = open(sdfile, 'r')
         molnameline=True
-        for line in f.readlines():
-            l = str(line).split()
-            if not molsep in l:
-                if molnameline:
-                    conf=1
-                    molname=str(l[0])+'_'+str(conf)
-                    while molname in allmolnames:
-                        conf+=1
+        with open(sdfile, 'r') as f:
+            for line in f:
+                l = str(line).split()
+                if not molsep in l:
+                    if molnameline:
+                        conf=1
                         molname=str(l[0])+'_'+str(conf)
-                    allmolnames.append(molname)
-                    if outputdir:
-                        sdfilename=outputdir+'/'+molname+".sdf"
+                        while molname in allmolnames:
+                            conf+=1
+                            molname=str(l[0])+'_'+str(conf)
+                        allmolnames.append(molname)
+                        if outputdir:
+                            sdfilename=outputdir+'/'+molname+".sdf"
+                        else:
+                            sdfilename=molname+".sdf"
+                        newf = open(sdfilename,'w')
+                        newf.write(line)
+                        molnameline=False
+                        sdfiles.append(sdfilename)
                     else:
-                        sdfilename=molname+".sdf"
-                    newf = open(sdfilename,'w')
-                    newf.write(line)
-                    molnameline=False
-                    sdfiles.append(sdfilename)
+                        newf.write(line)
                 else:
                     newf.write(line)
-            else:
-                newf.write(line)
-                newf.close()
-                molnameline=True
+                    newf.close()
+                    molnameline=True
     elif count > 1 and parts > 0 and molspersdf == 1:
-        f = open(sdfile, 'r')
         bunch=int(count/parts)
         newbunch = True
         molnum, part = 0, firstpart-1
-        for line in f.readlines():
-            l = str(line).split()
-            if molsep in l:
-                molnum += 1
-                newf.write(line)
-                if molnum >= bunch:
-                    newf.close()
-                    newbunch = True
-                    molnum = 0
-                else:
-                    newbunch = False
-            else:
-                if newbunch:
-                    part += 1
-                    filename=str(sdfile)[0:-4]+'_part'+str(part)
-                    if outputdir:
-                        sdfilename=outputdir+'/'+filename+".sdf"
+        with open(sdfile, 'r') as f:
+            for line in f:
+                l = str(line).split()
+                if molsep in l:
+                    molnum += 1
+                    newf.write(line)
+                    if molnum >= bunch:
+                        newf.close()
+                        newbunch = True
+                        molnum = 0
                     else:
-                        sdfilename=filename+".sdf"
-                    newf = open(sdfilename,'w')
-                    sdfiles.append(sdfilename)
-                    newbunch = False
-                newf.write(line)
+                        newbunch = False
+                else:
+                    if newbunch:
+                        part += 1
+                        filename=str(sdfile)[0:-4]+'_part'+str(part)
+                        if outputdir:
+                            sdfilename=outputdir+'/'+filename+".sdf"
+                        else:
+                            sdfilename=filename+".sdf"
+                        newf = open(sdfilename,'w')
+                        sdfiles.append(sdfilename)
+                        newbunch = False
+                    newf.write(line)
     elif count > 1 and parts == 0 and molspersdf > 1:
-        f = open(sdfile, 'r')
         bunch=int(molspersdf)
         newbunch = True
         molnum, part = 0, firstpart-1
-        for line in f.readlines():
-            l = str(line).split()
-            if molsep in l:
-                molnum += 1
-                newf.write(line)
-                if molnum >= bunch:
-                    newf.close()
-                    newbunch = True
-                    molnum = 0
-                else:
-                    newbunch = False
-            else:
-                if newbunch:
-                    part += 1
-                    filename=str(sdfile)[0:-4]+'_part'+str(part)
-                    if outputdir:
-                        sdfilename=outputdir+'/'+filename+".sdf"
+        with open(sdfile, 'r') as f:
+            for line in f:
+                l = str(line).split()
+                if molsep in l:
+                    molnum += 1
+                    newf.write(line)
+                    if molnum >= bunch:
+                        newf.close()
+                        newbunch = True
+                        molnum = 0
                     else:
-                        sdfilename=filename+".sdf"
-                    newf = open(sdfilename,'w')
-                    sdfiles.append(sdfilename)
-                    newbunch = False
-                newf.write(line)
+                        newbunch = False
+                else:
+                    if newbunch:
+                        part += 1
+                        filename=str(sdfile)[0:-4]+'_part'+str(part)
+                        if outputdir:
+                            sdfilename=outputdir+'/'+filename+".sdf"
+                        else:
+                            sdfilename=filename+".sdf"
+                        newf = open(sdfilename,'w')
+                        sdfiles.append(sdfilename)
+                        newbunch = False
+                    newf.write(line)
     else:
         print(" *** Error: sdfile could not be processed! *** ")
         exit()
