@@ -39,14 +39,20 @@ LigPrepper.smiles2sdf(smiles_list, labels=labels_list, ref='ref.sdf', mergesdf=F
 #### convert formats
 
 ```
-sdf2pdbqt
-pdbqt2sdf
+LigPrepper.sdf2pdbqt("your-molecule.sdf")
+LigPrepper.pdbqt2sdf("your-molecule.pdbqt")
 ```
 
 #### split sdf
 
 ```
-splitsdf
+Ligprepper.splitsdf("your-molecules.sdf",outputdir=None,parts=0,molspersdf=1,firstpart=1)
+
+Arguments:
+    outputdir   - directory to save output sdf files
+    parts       - number of parts to split
+    molspersdf  - number of molecules to be chunked into (parts is neglected if this is used)
+    firstpart   - naumber of the first part 
 ```
 
 #### Draw 2D structures
