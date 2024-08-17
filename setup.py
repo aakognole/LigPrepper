@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="LigPrepper",
-    version="0.4.5",
+    version="0.5.0",
     author="Abhishek Kognole",
     author_email="aakognole@gmail.com",
     description="Simple program to quickly prepare ligand 3d SDF/MOL2/PDBQT from smiles",
@@ -21,7 +21,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     packages=find_packages(),
-    install_requires=['rdkit-pypi'],
-    python_requires=">=3.6",
+    install_requires=['rdkit'],
+    python_requires=">=3.9",
     zip_safe=False
 )
